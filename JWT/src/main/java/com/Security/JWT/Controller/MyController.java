@@ -38,7 +38,7 @@ public class MyController {
         return service.addUser(users);
     }
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public String login(@RequestBody Users user){
         return service.verify(user);
     }

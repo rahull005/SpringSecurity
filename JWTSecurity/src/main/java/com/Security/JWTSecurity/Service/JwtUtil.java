@@ -1,29 +1,24 @@
-package com.Security.JWT.Service;
+package com.Security.JWTSecurity.Service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.cglib.core.internal.Function;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
-@Service
-public class JWTService {
-
-    private String secretKey = "";
-
-    //for generrating a (KEY) safe type key....i.e HmacSHA256
-    public JWTService(){
+@Component
+public class JwtUtil {
+    private String secretKey = "secret";
+    public JwtUtil(){
         KeyGenerator keyGenerator = null;
         try {
             keyGenerator = KeyGenerator.getInstance("HmacSHA256");
@@ -35,23 +30,15 @@ public class JWTService {
 
     }
 
-    //for token generation
-    Map<String,Object> claims = new HashMap<>();
     public String generateToken(String username) {
         return Jwts.builder()
-                .claims()
-                .add(claims)
-                .subject(username)
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 60 * 60 * 30))
-                .and()
-                .signWith(getKey())
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
+                .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
-
     }
 
-
-    //for converting the generated Secret key into byte array
     public SecretKey getKey(){
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
@@ -88,5 +75,5 @@ public class JWTService {
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
-
 }
+
