@@ -1,6 +1,6 @@
 package com.Security.JWTSecurity.Service;
 
-import com.Security.JWTSecurity.Model.User;
+import com.Security.JWTSecurity.Model.Users;
 import com.Security.JWTSecurity.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,11 +18,9 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = repo.findByUsername(username);
-        if (user == null) throw new UsernameNotFoundException("User not found");
-        return new org.springframework.security.core.userdetails.User(
-                user.getUsername(), user.getPassword(),
-                List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
-        );
+         UserDetailImp user = repo.findByUsername(username)
+                .map(users -> new UserDetailImp(users))
+                .orElseThrow(() -> new UsernameNotFoundException("user not found"));
+    return user;
     }
 }

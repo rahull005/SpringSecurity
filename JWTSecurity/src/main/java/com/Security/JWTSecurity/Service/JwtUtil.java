@@ -8,14 +8,17 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.cglib.core.internal.Function;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
-@Component
+@Service
 public class JwtUtil {
     private String secretKey = "secret";
     public JwtUtil(){
@@ -30,12 +33,16 @@ public class JwtUtil {
 
     }
 
+
+
     public String generateToken(String username) {
+//        Map<String,Object> claims = new HashMap<>();
         return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+//                .claims(claims)
+                .subject(username)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis()+1000*60*60))
+                .signWith(getKey())
                 .compact();
     }
 

@@ -1,20 +1,22 @@
 package com.Security.JWTSecurity.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Table;
-import org.springframework.data.annotation.Id;
+import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "JWT_ENCRYPT")
-public class User {
+public class Users {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     private String username;
     private String password;
-    private String role; // "USER" or "ADMIN"
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "role")
+    private List<String> role; // "USER" or "ADMIN"
+    private boolean active;
 
     public Long getId() {
         return id;
@@ -40,12 +42,20 @@ public class User {
         this.password = password;
     }
 
-    public String getRole() {
+    public List<String> getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(List<String> role) {
         this.role = role;
     }
-// getters and setters
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+    // getters and setters
 }
